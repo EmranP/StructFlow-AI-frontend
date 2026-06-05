@@ -17,6 +17,7 @@ import (
 	generationhandler "github.com/EmranP/Design-Struct-Project-AI/backend/internal/generation/handler"
 	generationservice "github.com/EmranP/Design-Struct-Project-AI/backend/internal/generation/service"
 	generationusecase "github.com/EmranP/Design-Struct-Project-AI/backend/internal/generation/usecase"
+	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/generation/zip"
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/infrastructure/database"
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/infrastructure/logger"
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/infrastructure/postgres"
@@ -62,9 +63,8 @@ func main() {
 		GenerationRepository:        generationRepo,
 		GeneratedTemplateRepository: templateRepo,
 	}
-
+	// Service
 	passwordService := password.New()
-
 	tokenService := token.New(
 		cfg.JWTSecret,
 	)
@@ -74,11 +74,23 @@ func main() {
 		)
 
 	v := validator.New()
-
+	generator := generationservice.New(
+		generationRepo,
+		templateRepo,
+	)
+	zipService := zip.New()
+	// UseCase
 	authUC := authusecase.New(
 		userRepo,
 		passwordService,
 		tokenService,
+	)
+	generationUC := generationusecase.New(
+		projectRepo,
+		generationRepo,
+		templateRepo,
+		generator,
+		zipService,
 	)
 	authHandler := authHandle.New(
 		authUC,
@@ -90,16 +102,6 @@ func main() {
 	projectHandler := projectHandle.New(
 		projectUC,
 		v,
-	)
-	generator := generationservice.New(
-		generationRepo,
-		templateRepo,
-	)
-	generationUC := generationusecase.New(
-		projectRepo,
-		generationRepo,
-		templateRepo,
-		generator,
 	)
 	generationHandler := generationhandler.New(
 		generationUC,
@@ -166,6 +168,10 @@ func main() {
 	generations.Get(
 		"/:id/templates",
 		generationHandler.GetTemplates,
+	)
+	generations.Get(
+		"/download/:id",
+		generationHandler.Download,
 	)
 
 	app.Use(func(c *fiber.Ctx) error {

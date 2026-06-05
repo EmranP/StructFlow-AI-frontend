@@ -140,3 +140,36 @@ func (h *GenerationHandler) GetTemplates(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(genTemps)
 }
+
+func (h *GenerationHandler) Download(
+	c *fiber.Ctx,
+) error {
+	id, err := uuid.Parse(
+		c.Params("id"),
+	)
+	if err != nil {
+		return err
+	}
+
+	archive, errArchive := h.generationUC.Download(
+		c.Context(),
+		id,
+	)
+	if errArchive != nil {
+		return errArchive
+	}
+
+	c.Set(
+		"Content-Type",
+		"application/zip",
+	)
+
+	c.Set(
+		"Content-Disposition",
+		"attachment; filename=project.zip",
+	)
+
+	return c.Send(
+		archive,
+	)
+}

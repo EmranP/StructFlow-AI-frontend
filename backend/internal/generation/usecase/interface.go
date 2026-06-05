@@ -31,4 +31,9 @@ type GenerationUseCase interface {
 		ctx context.Context,
 		genId uuid.UUID,
 	) ([]dto.GenerationTempResponse, error)
+
+	Download(
+		ctx context.Context,
+		generationID uuid.UUID,
+	) ([]byte, error)
 }

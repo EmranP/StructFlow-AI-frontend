@@ -10,17 +10,20 @@ import (
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/domain"
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/generation/dto"
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/generation/service"
+	genservice "github.com/EmranP/Design-Struct-Project-AI/backend/internal/generation/service"
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/generation/status"
+	zipservice "github.com/EmranP/Design-Struct-Project-AI/backend/internal/generation/zip"
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/repository"
 	customerrors "github.com/EmranP/Design-Struct-Project-AI/backend/internal/shared/errors"
 )
 
 type generationUseCase struct {
 	projectRepo repository.ProjectRepository
-	generator   *service.Generator
+	generator   *genservice.Generator
 
 	generationRepo     repository.GenerationRepository
 	generationTempRepo repository.GeneratedTemplateRepository
+	zipService         *zipservice.Service
 }
 
 func New(
@@ -28,12 +31,14 @@ func New(
 	generationRepo repository.GenerationRepository,
 	generationTempRepo repository.GeneratedTemplateRepository,
 	generator *service.Generator,
+	zipService *zipservice.Service,
 ) GenerationUseCase {
 	return &generationUseCase{
 		projectRepo:        projectRepo,
 		generationRepo:     generationRepo,
 		generationTempRepo: generationTempRepo,
 		generator:          generator,
+		zipService:         zipService,
 	}
 }
 
@@ -176,4 +181,27 @@ func (u *generationUseCase) FindTemplates(
 	}
 
 	return genTempsDto, nil
+}
+
+func (u *generationUseCase) Download(
+	ctx context.Context,
+	generationID uuid.UUID,
+) ([]byte, error) {
+	templates, err := u.generationTempRepo.
+		GetByGenerationID(
+			ctx,
+			generationID,
+		)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(templates) == 0 {
+		return nil,
+			customerrors.ErrGenerationNotFound
+	}
+
+	return u.zipService.Generate(
+		templates[0].Content,
+	)
 }
