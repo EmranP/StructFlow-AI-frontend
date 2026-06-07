@@ -12,7 +12,7 @@
 
 **Describe your project → AI designs the folder structure → Download and start coding**
 
-[Demo](#) · [Report Bug](issues) · [Request Feature](issues)
+[Demo](#)
 
 </div>
 
@@ -23,18 +23,12 @@
 - [About](#-about)
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
-- [Architecture](#-architecture)
 - [Getting Started](#-getting-started)
   - [Prerequisites](#prerequisites)
   - [Backend Setup](#backend-setup)
   - [Frontend Setup](#frontend-setup)
   - [Environment Variables](#environment-variables)
-- [API Reference](#-api-reference)
-- [User Flow](#-user-flow)
-- [Project Structure](#-project-structure)
 - [Database Schema](#-database-schema)
-- [Contributing](#-contributing)
-- [License](#-license)
 
 ---
 
@@ -96,76 +90,6 @@ Describe your project in plain text → StructFlow generates 3 ready-to-use dire
 | **Angular Router** | —       | Client-side routing        |
 | **HttpClient**     | —       | HTTP with JWT interceptor  |
 | **Signals**        | —       | Reactive state             |
-
----
-
-## 🏗 Architecture
-
-### System Overview
-
-┌─────────────────────────────────────────────────────────┐
-│ Client │
-│ Angular 17 SPA │
-│ (Standalone Components + Signals) │
-└─────────────────────┬───────────────────────────────────┘
-│ HTTP + JWT
-▼
-┌─────────────────────────────────────────────────────────┐
-│ Backend API │
-│ Go + Fiber v2 │
-│ │
-│ ┌─────────┐ ┌──────────┐ ┌───────────────────┐ │
-│ │ Auth │ │ Projects │ │ Generations │ │
-│ │ Handler │ │ Handler │ │ Handler │ │
-│ └────┬────┘ └────┬─────┘ └─────────┬─────────┘ │
-│ │ │ │ │
-│ ┌────▼─────────────▼───────────────────▼─────────┐ │
-│ │ Use Cases / Services │ │
-│ └────────────────────────┬────────────────────────┘ │
-│ │ │
-│ ┌────────────────────────▼────────────────────────┐ │
-│ │ Repository Layer │ │
-│ └──────────────┬─────────────────┬────────────────┘ │
-│ │ │ │
-└──────────────────┼─────────────────┼────────────────────┘
-|
-┌────────▼──┐
-│PostgreSQL │
-│(main DB) │
-└───────────┘
-
-### Frontend Architecture
-
-src/app/
-├── models/ ← TypeScript interfaces (single source of truth)
-├── services/ ← HTTP layer (Auth, Project, Generation)
-├── guards/ ← Route protection (authGuard)
-├── components/ ← Shared UI (Navbar, LoadingWave)
-└── pages/ ← Route-level components
-├── auth/ ← Login / Register
-├── projects/ ← Dashboard with pagination
-├── project-detail/ ← Project info + generation history
-├── generation/ ← Live status polling
-└── structure/ ← File tree viewer + download
-
-### Generation State Machine
-
-POST /gen/:id │ PENDING │ ──── waiting in queue
-│
-▼
-worker picks up
-┌──────────┐
-│ │
-│ PROCESS │ ──── AI generating structure
-│ │
-└────┬─────┘
-│
-┌───────┴────────┐
-▼ ▼
-┌─────────┐ ┌────────┐
-│COMPLETED│ │ FAILED │
-│ 3 temps │ │ error │
-└─────────┘ └────────┘
 
 ---
 
@@ -250,45 +174,10 @@ DB_PASSWORD=your_password
 JWT_SECRET=your_super_secret_key
 JWT_EXPIRES_IN=24h
 
+
 # AI Provider
 AI_API_KEY=your_ai_api_key
 ```
-
----
-
-## 🔄 User Flow
-
-Register / Login
-│
-▼
-Create Project
-┌─────────────────────────────┐
-│ Title, Type, Stack, │
-│ Architecture, Features, │
-│ Additional Info │
-└─────────────────────────────┘
-│
-▼
-Project Detail Page
-→ View project info
-→ See generation history
-→ Click "Generate Structure"
-│
-▼
-Generation Page (live polling every 30s)
-┌──────────┐ ┌──────────┐ ┌───────────┐
-│ PENDING │ → │ PROCESS │ → │ COMPLETED │
-│ queue UI │ │ wave anim│ │ show btn │
-└──────────┘ └──────────┘ └───────────┘
-│
-▼
-Structure Page
-→ Switch between Simple / Medium / Enterprise
-→ Explore interactive file tree
-→ Click "Download ZIP"
-│
-▼
-Start coding 🚀
 
 ---
 

@@ -1,0 +1,517 @@
+openapi: 3.0.3
+
+info:
+  title: Design Struct Project AI API
+  version: 1.0.0
+  description: AI-powered project structure generation platform
+
+servers:
+  - url: http://localhost:3000/api
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    MessageWithIdResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        id:
+          type: string
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          example: test@gmail.com
+          type: string
+        password:
+          example: qwert
+          type: string
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          example: test@gmail.com
+        password:
+          type: string
+          example: qwert
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+    MeResponse:
+      type: object
+      properties:
+        id:
+          type: string
+
+    ProjectRequest:
+      type: object
+      required:
+        - title
+        - projectType
+        - stack
+        - features
+      properties:
+        title:
+          type: string
+          example: StructFlow
+        projectType:
+          type: string
+          example: Backend, Microservice, Frontend
+        stack:
+          type: string
+          example: Go, Fiber
+        architecture:
+          type: string
+          example: Clean, FSD, DDD
+        features:
+          type: string
+          example: Auth, GRUD, Payment, Profile
+        additionalInfo:
+          type: string
+          example: Any message for help generation
+    ProjectResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        projectType:
+          type: string
+        stack:
+          type: string
+        architecture:
+          type: string
+        features:
+          type: string
+        additionalInfo:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    ProjectAllResponse:
+      type: object
+      properties:
+        projects:
+          type: array
+        totalCount:
+          type: number
+        page:
+          type: number
+        limit:
+          type: number
+    CreateProjectResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        projectId:
+          type: string
+    GenerationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+            - pending
+            - processing
+            - completed
+            - failed
+    GenerationAllResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        projectId:
+          type: string
+        status:
+          type: string
+        errorMessage:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    GenerationTemplateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        generationId:
+          type: string
+        type:
+          type: string
+        content:
+          type: object
+        createdAt:
+          type: string
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User created
+        '400':
+          description: Validation error
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Bad-request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/me:
+    get:
+      tags:
+        - Auth
+      security:
+        - BearerAuth: []
+      summary: Current user
+      responses:
+        '200':
+          description: User data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeResponse'
+
+  /project/new:
+    post:
+      tags:
+        - Project
+      security:
+        - BearerAuth: []
+      summary: Create project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProjectResponse'
+
+  /project/all:
+    get:
+      tags:
+        - Project
+      security:
+        - BearerAuth: []
+      summary: Get all projects
+      responses:
+        '200':
+          description: Projects list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectAllResponse'
+        '400':
+          description: Bad-request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /project/{id}:
+    get:
+      tags:
+        - Project
+      security:
+        - BearerAuth: []
+      summary: Get project by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+        '400':
+          description: Bad-request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Project
+      security:
+        - BearerAuth: []
+      summary: Delete project
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Bad-request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /project/edit/{id}:
+    patch:
+      tags:
+        - Project
+      security:
+        - BearerAuth: []
+      summary: Update project
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+      responses:
+        '200':
+          description: Project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Bad-request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /project/remove/all:
+    delete:
+      tags:
+        - Project
+      security:
+        - BearerAuth: []
+      summary: Delete all projects
+      responses:
+        '200':
+          description: Delete all Project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Bad-request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /project/gen/{id}:
+    post:
+      tags:
+        - Generation
+      security:
+        - BearerAuth: []
+      summary: Generate templates
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Generation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerationResponse'
+        '400':
+          description: Bad-request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /gen/{id}:
+    get:
+      tags:
+        - Generation
+      security:
+        - BearerAuth: []
+      summary: Get generation by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Generate status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerationResponse'
+        '400':
+          description: Bad-request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /gen/all/{id}:
+    get:
+      tags:
+        - Generation
+      security:
+        - BearerAuth: []
+      summary: Get all generations by project
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Generation list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerationAllResponse'
+        '400':
+          description: Bad-request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /gen/{id}/templates:
+    get:
+      tags:
+        - Templates
+      security:
+        - BearerAuth: []
+      summary: Get generated templates
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Generation Template
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerationTemplateResponse'
+        '400':
+          description: Bad-request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /gen/download/{id}:
+    get:
+      tags:
+        - Templates
+      security:
+        - BearerAuth: []
+      summary: Download ZIP archive
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ZIP file
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad-request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'

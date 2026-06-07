@@ -14,6 +14,19 @@ services:
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
+  swagger:
+    image: swaggerapi/swagger-ui
+
+    container_name: design_struct_swagger
+
+    ports:
+      - '8081:8080'
+
+    environment:
+      SWAGGER_JSON: /docs/openapi.yaml
+
+    volumes:
+      - ./docs:/docs
 
 volumes:
   postgres_data:

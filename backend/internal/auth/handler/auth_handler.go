@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/auth/dto"
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/auth/usecase"
+
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/shared/validator"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
