@@ -96,6 +96,54 @@ func ErrorHandler(
 			},
 		)
 
+	case stdErrors.Is(
+		err,
+		customerrors.ErrInvalidVerificationCode,
+	):
+		return c.Status(
+			fiber.StatusBadRequest,
+		).JSON(
+			fiber.Map{
+				"error": err.Error(),
+			},
+		)
+
+	case stdErrors.Is(
+		err,
+		customerrors.ErrEmailNotVerified,
+	):
+		return c.Status(
+			fiber.StatusBadRequest,
+		).JSON(
+			fiber.Map{
+				"error": err.Error(),
+			},
+		)
+
+	case stdErrors.Is(
+		err,
+		customerrors.ErrVerificationCodeResent,
+	):
+		return c.Status(
+			fiber.StatusOK,
+		).JSON(
+			fiber.Map{
+				"message": err.Error(),
+			},
+		)
+
+	case stdErrors.Is(
+		err,
+		customerrors.ErrVerificationCooldown,
+	):
+		return c.Status(
+			fiber.StatusBadRequest,
+		).JSON(
+			fiber.Map{
+				"message": err.Error(),
+			},
+		)
+
 	default:
 		return c.Status(
 			fiber.StatusInternalServerError,

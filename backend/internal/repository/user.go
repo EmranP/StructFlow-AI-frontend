@@ -22,4 +22,14 @@ type UserRepository interface {
 		ctx context.Context,
 		email string,
 	) (*domain.User, error)
+
+	UpdateVerified(
+		ctx context.Context,
+		id uuid.UUID,
+	) error
+
+	Delete(
+		ctx context.Context,
+		id uuid.UUID,
+	) error
 }

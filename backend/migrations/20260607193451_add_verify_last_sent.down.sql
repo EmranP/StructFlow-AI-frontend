@@ -1,0 +1,1 @@
+ALTER TABLE public.verification_codes ADD DROP last_sent_at;

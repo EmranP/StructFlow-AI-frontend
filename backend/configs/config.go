@@ -2,6 +2,7 @@ package configs
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -15,7 +16,14 @@ type Config struct {
 	DBPass string
 	DBName string
 
-	AIKey string
+	AIKey           string
+	ResendEmailKey  string
+	ResendEmailFrom string
+
+	SmtpHost     string
+	SmtpPort     int
+	SmtpEmail    string
+	SmtpPassword string
 
 	JWTSecret string
 	OriginUrl string
@@ -28,8 +36,14 @@ func Load() (*Config, error) {
 		return nil, err
 	}
 
+	smtpPort, err := strconv.Atoi(os.Getenv("SMTP_PORT"))
+	if err != nil {
+		return nil, err
+	}
+
 	return &Config{
-		AppPort: os.Getenv("APP_PORT"),
+		AppPort:   os.Getenv("APP_PORT"),
+		OriginUrl: os.Getenv("CLIENT_URL"),
 
 		DBHost: os.Getenv("DB_HOST"),
 		DBPort: os.Getenv("DB_PORT"),
@@ -37,9 +51,15 @@ func Load() (*Config, error) {
 		DBPass: os.Getenv("DB_PASS"),
 		DBName: os.Getenv("DB_NAME"),
 
-		AIKey: os.Getenv("API_AI_KEY"),
+		AIKey:           os.Getenv("API_AI_KEY"),
+		ResendEmailKey:  os.Getenv("API_RESEND_EMAIL_KEY"),
+		ResendEmailFrom: os.Getenv("API_RESEND_EMAIL_FROM"),
+
+		SmtpHost:     os.Getenv("SMTP_HOST"),
+		SmtpPort:     smtpPort,
+		SmtpEmail:    os.Getenv("SMTP_EMAIL"),
+		SmtpPassword: os.Getenv("SMTP_PASSWORD"),
 
 		JWTSecret: os.Getenv("JWT_SECRET"),
-		OriginUrl: os.Getenv("CLIENT_URL"),
 	}, nil
 }

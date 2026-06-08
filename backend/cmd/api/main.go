@@ -20,6 +20,7 @@ import (
 	generationUseCase "github.com/EmranP/Design-Struct-Project-AI/backend/internal/generation/usecase"
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/generation/zip"
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/infrastructure/database"
+	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/infrastructure/email"
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/infrastructure/logger"
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/infrastructure/postgres"
 	projectHandle "github.com/EmranP/Design-Struct-Project-AI/backend/internal/project/handler"
@@ -58,6 +59,7 @@ func main() {
 	api := app.Group("/api")
 
 	userRepo := postgres.NewUserRepository(db)
+	verifyRepo := postgres.NewVerificationRepository(db)
 	projectRepo := postgres.NewProjectRepository(db)
 	generationRepo := postgres.NewGenerationRepository(db)
 	templateRepo := postgres.NewGeneratedTemplateRepository(db)
@@ -96,11 +98,19 @@ func main() {
 		aiService,
 	)
 	zipService := zip.New()
+	emailService := email.NewResend(
+		cfg.SmtpHost,
+		cfg.SmtpPort,
+		cfg.SmtpEmail,
+		cfg.SmtpPassword,
+	)
 	// UseCase
 	authUC := authUseCase.New(
 		userRepo,
+		verifyRepo,
 		passwordService,
 		tokenService,
+		emailService,
 	)
 	generationUC := generationUseCase.New(
 		projectRepo,
@@ -139,6 +149,10 @@ func main() {
 	auth.Post(
 		"/login",
 		authHandler.Login,
+	)
+	auth.Post(
+		"/verify-email",
+		authHandler.VerifyEmail,
 	)
 	auth.Get(
 		"/me",

@@ -53,7 +53,7 @@ func (h *AuthHandler) Register(
 	return c.Status(
 		fiber.StatusCreated,
 	).JSON(fiber.Map{
-		"message": "user created",
+		"message": "user created and resend email code",
 	})
 }
 
@@ -84,6 +84,37 @@ func (h *AuthHandler) Login(
 	return c.JSON(
 		dto.AuthResponse{
 			AccessToken: token,
+		},
+	)
+}
+
+func (h *AuthHandler) VerifyEmail(
+	c *fiber.Ctx,
+) error {
+
+	var req dto.VerifyEmailRequest
+
+	if err := c.BodyParser(&req); err != nil {
+		return err
+	}
+
+	if err := h.validator.Validate(&req); err != nil {
+		return err
+	}
+
+	err := h.authUC.VerifyEmail(
+		c.Context(),
+		req.Email,
+		req.Code,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(
+		fiber.Map{
+			"message": "email verified",
 		},
 	)
 }

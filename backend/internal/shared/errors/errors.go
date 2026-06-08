@@ -12,7 +12,19 @@ var (
 	ErrGenerationNotFound = errors.New(
 		"generation not found",
 	)
+	ErrEmailNotVerified = errors.New(
+		"email not verified",
+	)
+	ErrVerificationCodeResent = errors.New(
+		"verification code resent",
+	)
+	ErrVerificationCooldown = errors.New(
+		"please wait before requesting a new verification code",
+	)
 
+	ErrInvalidVerificationCode = errors.New(
+		"invalid verification code",
+	)
 	ErrInvalidCredentials = errors.New(
 		"invalid credentials",
 	)

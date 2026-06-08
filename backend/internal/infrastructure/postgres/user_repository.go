@@ -59,6 +59,7 @@ func (r *UserRepository) GetByEmail(
 			id,
 			email,
 			password_hash,
+			is_verified,
 			created_at,
 			updated_at
 		FROM public.users
@@ -75,6 +76,7 @@ func (r *UserRepository) GetByEmail(
 		&user.ID,
 		&user.Email,
 		&user.PasswordHash,
+		&user.Verify,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
@@ -100,6 +102,7 @@ func (r *UserRepository) GetByID(
 			id,
 			email,
 			password_hash,
+			is_verified,
 			created_at,
 			updated_at
 		FROM public.users
@@ -116,6 +119,7 @@ func (r *UserRepository) GetByID(
 		&user.ID,
 		&user.Email,
 		&user.PasswordHash,
+		&user.Verify,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
@@ -129,4 +133,38 @@ func (r *UserRepository) GetByID(
 	}
 
 	return &user, nil
+}
+
+func (r *UserRepository) UpdateVerified(
+	ctx context.Context,
+	id uuid.UUID,
+) error {
+
+	query := `
+		UPDATE public.users
+		SET is_verified = true
+		WHERE id = $1
+	`
+
+	_, err := r.db.Exec(
+		ctx,
+		query,
+		id,
+	)
+
+	return err
+}
+
+func (r *UserRepository) Delete(
+	ctx context.Context,
+	id uuid.UUID,
+) error {
+	query := `
+		DELETE FROM public.users
+		WHERE id = $1
+	`
+
+	_, err := r.db.Exec(ctx, query, id)
+
+	return err
 }

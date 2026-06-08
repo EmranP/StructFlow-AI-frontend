@@ -19,6 +19,12 @@ type AuthUseCase interface {
 		password string,
 	) (string, error)
 
+	VerifyEmail(
+		ctx context.Context,
+		email string,
+		code string,
+	) error
+
 	Me(
 		ctx context.Context,
 		id uuid.UUID,

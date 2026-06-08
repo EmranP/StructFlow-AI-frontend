@@ -6,7 +6,7 @@
 
 ![Angular](https://img.shields.io/badge/Angular-17-DD0031?style=flat-square&logo=angular)
 ![Go](https://img.shields.io/badge/Go-1.25-00ADD8?style=flat-square&logo=go)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
@@ -71,14 +71,11 @@ Describe your project in plain text → StructFlow generates 3 ready-to-use dire
 
 | Technology     | Version | Purpose          |
 | -------------- | ------- | ---------------- |
-| **Go**         | 1.21+   | Core language    |
+| **Go**         | 1.25    | Core language    |
 | **Fiber**      | v2      | HTTP framework   |
-| **GORM**       | v2      | ORM              |
-| **PostgreSQL** | 16      | Primary database |
-| **Redis**      | 7       | Queue / caching  |
+| **PostgreSQL** | —       | Primary database |
 | **JWT**        | —       | Authentication   |
 | **Docker**     | —       | Containerization |
-| **Kubernetes** | —       | Orchestration    |
 
 ### Frontend
 
