@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/auth/password"
@@ -19,6 +18,8 @@ type authUseCase struct {
 	userRepo   repository.UserRepository
 	verifyRepo repository.VerificationRepository
 
+	sessionUC AuthSessionUseCase
+
 	passwordService password.Service
 	tokenService    *token.Service
 	emailService    *email.ResendService
@@ -27,6 +28,7 @@ type authUseCase struct {
 func New(
 	userRepo repository.UserRepository,
 	verifyRepo repository.VerificationRepository,
+	sessionUC AuthSessionUseCase,
 	passwordService password.Service,
 	tokenService *token.Service,
 	emailService *email.ResendService,
@@ -35,45 +37,12 @@ func New(
 		userRepo:   userRepo,
 		verifyRepo: verifyRepo,
 
+		sessionUC: sessionUC,
+
 		passwordService: passwordService,
 		tokenService:    tokenService,
 		emailService:    emailService,
 	}
-}
-
-func (u *authUseCase) Login(
-	ctx context.Context,
-	email string,
-	password string,
-) (string, error) {
-	user, err := u.userRepo.
-		GetByEmail(ctx, email)
-
-	if err != nil {
-		return "", err
-	}
-
-	if user == nil {
-		return "", customerrors.ErrInvalidCredentials
-	}
-
-	if !u.passwordService.Verify(
-		password,
-		user.PasswordHash,
-	) {
-		return "", customerrors.ErrInvalidCredentials
-	}
-
-	token, err := u.tokenService.
-		GenerateAccessToken(
-			user.ID.String(),
-		)
-
-	if err != nil {
-		return "", err
-	}
-
-	return token, nil
 }
 
 func (u *authUseCase) Register(
@@ -84,7 +53,6 @@ func (u *authUseCase) Register(
 	existing, err := u.userRepo.GetByEmail(ctx, email)
 
 	if err == nil && existing != nil {
-
 		if existing.Verify {
 			return customerrors.ErrUserAlreadyExists
 		}
@@ -115,7 +83,6 @@ func (u *authUseCase) Register(
 			newCode,
 		)
 		if errEmail != nil {
-			fmt.Println(errEmail.Error())
 			return errEmail
 		}
 
@@ -124,7 +91,7 @@ func (u *authUseCase) Register(
 
 	hash, errHash := u.passwordService.Hash(password)
 	if errHash != nil {
-		return err
+		return errHash
 	}
 
 	user := &domain.User{
@@ -154,27 +121,57 @@ func (u *authUseCase) Register(
 
 	errEmail := u.emailService.SendVerification(user.Email, verifyCode.Code)
 	if errEmail != nil {
-		fmt.Println(errEmail.Error())
 		return errEmail
 	}
 
 	return nil
 }
 
-func (u *authUseCase) VerifyEmail(
+func (u *authUseCase) Login(
 	ctx context.Context,
 	email string,
-	code string,
-) error {
+	password string,
+) (*token.GenerationTokens, error) {
 	user, err := u.userRepo.
 		GetByEmail(ctx, email)
 
 	if err != nil {
-		return err
+
+		return nil, err
 	}
 
 	if user == nil {
-		return customerrors.ErrUserNotFound
+		return nil, customerrors.ErrInvalidCredentials
+	}
+
+	if !user.Verify {
+		return nil, customerrors.ErrEmailNotVerified
+	}
+
+	if !u.passwordService.Verify(
+		password,
+		user.PasswordHash,
+	) {
+		return nil, customerrors.ErrInvalidCredentials
+	}
+
+	return u.sessionUC.CreateOrUpdate(ctx, user.ID)
+}
+
+func (u *authUseCase) VerifyEmail(
+	ctx context.Context,
+	email string,
+	code string,
+) (*token.GenerationTokens, error) {
+	user, err := u.userRepo.
+		GetByEmail(ctx, email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if user == nil {
+		return nil, customerrors.ErrUserNotFound
 	}
 
 	verifyCode, err := u.verifyRepo.
@@ -184,42 +181,40 @@ func (u *authUseCase) VerifyEmail(
 		)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if verifyCode == nil {
-		return customerrors.ErrInvalidVerificationCode
+		return nil, customerrors.ErrInvalidVerificationCode
 	}
 
 	if verifyCode.Code != code {
-		return customerrors.ErrInvalidVerificationCode
+		return nil, customerrors.ErrInvalidVerificationCode
 	}
 
 	if time.Now().After(
 		verifyCode.ExpiresAt,
 	) {
-		return customerrors.ErrVerificationCodeResent
+		return nil, customerrors.ErrVerificationCodeResent
 	}
 
-	err = u.userRepo.UpdateVerified(
+	errUpdateVerify := u.userRepo.UpdateVerified(
 		ctx,
 		user.ID,
 	)
-
-	if err != nil {
-		return err
+	if errUpdateVerify != nil {
+		return nil, errUpdateVerify
 	}
 
-	err = u.verifyRepo.Delete(
+	errDelete := u.verifyRepo.Delete(
 		ctx,
 		verifyCode.ID,
 	)
-
-	if err != nil {
-		return err
+	if errDelete != nil {
+		return nil, errDelete
 	}
 
-	return nil
+	return u.sessionUC.CreateOrUpdate(ctx, user.ID)
 }
 
 func (u *authUseCase) Me(

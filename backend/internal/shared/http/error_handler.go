@@ -144,6 +144,18 @@ func ErrorHandler(
 			},
 		)
 
+	case stdErrors.Is(
+		err,
+		customerrors.ErrSessionNotFound,
+	):
+		return c.Status(
+			fiber.StatusNotFound,
+		).JSON(
+			fiber.Map{
+				"message": err.Error(),
+			},
+		)
+
 	default:
 		return c.Status(
 			fiber.StatusInternalServerError,

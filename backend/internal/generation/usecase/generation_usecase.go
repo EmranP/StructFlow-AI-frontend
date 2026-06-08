@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/google/uuid"
 
@@ -97,7 +96,6 @@ func (u *generationUseCase) FindByID(
 		)
 
 	if err != nil {
-		fmt.Println(err.Error())
 		return nil, err
 	}
 
@@ -122,7 +120,7 @@ func (u *generationUseCase) FindByProjectID(
 
 	total, err := u.generationRepo.GetCount(ctx, projectID)
 	if err != nil {
-		fmt.Printf("\n Total: %s", err.Error())
+
 		return nil, 0, err
 	}
 
@@ -137,7 +135,6 @@ func (u *generationUseCase) FindByProjectID(
 		offset,
 	)
 	if err != nil {
-		fmt.Printf("\nUsecase: %s", err.Error())
 		return nil, 0, err
 	}
 

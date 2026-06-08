@@ -53,7 +53,7 @@ func (u *projectUseCase) Add(
 		project,
 	)
 	if err != nil {
-		return uuid.UUID{}, err
+		return uuid.Nil, err
 	}
 
 	return newProject, nil

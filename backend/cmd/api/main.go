@@ -60,6 +60,7 @@ func main() {
 
 	userRepo := postgres.NewUserRepository(db)
 	verifyRepo := postgres.NewVerificationRepository(db)
+	sessionRepo := postgres.NewSessionRepository(db)
 	projectRepo := postgres.NewProjectRepository(db)
 	generationRepo := postgres.NewGenerationRepository(db)
 	templateRepo := postgres.NewGeneratedTemplateRepository(db)
@@ -105,9 +106,16 @@ func main() {
 		cfg.SmtpPassword,
 	)
 	// UseCase
+	sessionUC := authUseCase.NewSession(
+		sessionRepo,
+		userRepo,
+		passwordService,
+		tokenService,
+	)
 	authUC := authUseCase.New(
 		userRepo,
 		verifyRepo,
+		sessionUC,
 		passwordService,
 		tokenService,
 		emailService,
@@ -121,6 +129,7 @@ func main() {
 	)
 	authHandler := authHandle.New(
 		authUC,
+		sessionUC,
 		v,
 	)
 	projectUC := projectUseCase.New(
@@ -158,6 +167,15 @@ func main() {
 		"/me",
 		jwtMiddleware.Protected,
 		authHandler.Me,
+	)
+	auth.Get(
+		"/refresh",
+		authHandler.Refresh,
+	)
+	auth.Post(
+		"/logout",
+		jwtMiddleware.Protected,
+		authHandler.Logout,
 	)
 
 	// Project Route

@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/domain"
 	"github.com/google/uuid"
@@ -146,7 +145,7 @@ func (r *GenerationRepository) GetByID(
 	}
 
 	if err != nil {
-		fmt.Printf("\nError repo: %s", err.Error())
+
 		return nil, err
 	}
 

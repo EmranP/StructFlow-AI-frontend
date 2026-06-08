@@ -56,6 +56,20 @@ components:
         password:
           type: string
           example: qwert
+    VerifyRequest:
+      type: object
+      required:
+        - email
+        - code
+      properties:
+        email:
+          type: string
+          example: test@gmail.com
+        code:
+          type: string
+          example: 123456
+          minLength: 6
+          maxLength: 6
     AuthResponse:
       type: object
       properties:
@@ -188,8 +202,16 @@ paths:
       responses:
         '201':
           description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
         '400':
           description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /auth/login:
     post:
@@ -215,6 +237,67 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/verify-email:
+    post:
+      tags:
+        - Auth
+      summary: Verify-email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyRequest'
+      responses:
+        '200':
+          description: User verified email
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /auth/refresh:
+    get:
+      tags:
+        - Auth
+      summary: Update session
+      parameters:
+        - name: refreshToken
+          in: cookie
+          required: true
+          schema:
+            type: string
+      description: A refresh token stored in the user's cookies.
+      responses:
+        '200':
+          description: New token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Bad-request refresh token not empty from cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Logout session
+      security:
+        - BearerAuth: []
+
+      responses:
+        '200':
+          description: 'Message status'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
 
   /auth/me:
     get:

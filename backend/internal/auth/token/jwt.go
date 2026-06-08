@@ -1,14 +1,23 @@
 package token
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 type Service struct {
 	secret []byte
+}
+
+type GenerationTokens struct {
+	Access  string
+	Refresh string
 }
 
 func New(secret string) *Service {
@@ -17,8 +26,24 @@ func New(secret string) *Service {
 	}
 }
 
+func GenerateSessionID() uuid.UUID {
+	return uuid.New()
+}
+
+func GenerateRefreshSecret() (string, error) {
+
+	b := make([]byte, 64)
+
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.RawURLEncoding.EncodeToString(b), nil
+}
+
 func (s *Service) GenerateAccessToken(
-	userID string,
+	userID uuid.UUID,
 ) (string, error) {
 
 	token := jwt.NewWithClaims(
@@ -60,4 +85,27 @@ func (s *Service) ParseAccessToken(
 	}
 
 	return userID, nil
+}
+
+func ParseRefreshToken(
+	token string,
+) (uuid.UUID, string, error) {
+
+	parts := strings.Split(token, ".")
+
+	if len(parts) != 2 {
+		return uuid.Nil, "", errors.New(
+			"invalid refresh token",
+		)
+	}
+
+	sessionID, err := uuid.Parse(
+		parts[0],
+	)
+
+	if err != nil {
+		return uuid.Nil, "", err
+	}
+
+	return sessionID, parts[1], nil
 }

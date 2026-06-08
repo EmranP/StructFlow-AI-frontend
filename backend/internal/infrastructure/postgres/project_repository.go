@@ -67,7 +67,7 @@ func (r *ProjectRepository) Create(
 	)
 
 	if err != nil {
-		return uuid.UUID{}, err
+		return uuid.Nil, err
 	}
 
 	return projectId, err

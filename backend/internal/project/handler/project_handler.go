@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/EmranP/Design-Struct-Project-AI/backend/internal/project/dto"
@@ -58,7 +57,7 @@ func (h *ProjectHandler) Create(c *fiber.Ctx) error {
 		&req,
 	)
 	if err != nil {
-		fmt.Println(err.Error())
+
 		return err
 	}
 

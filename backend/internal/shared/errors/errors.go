@@ -21,6 +21,9 @@ var (
 	ErrVerificationCooldown = errors.New(
 		"please wait before requesting a new verification code",
 	)
+	ErrSessionNotFound = errors.New(
+		"Session not found!",
+	)
 
 	ErrInvalidVerificationCode = errors.New(
 		"invalid verification code",
