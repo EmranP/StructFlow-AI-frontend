@@ -1,8 +1,6 @@
 {
-	"rewrites": [
-		{
-			"source": "/(.*)",
-			"destination": "/index.html"
-		}
-	]
+	"version": 2,
+	"public": true,
+	"cleanUrls": true,
+	"routes": [{ "src": "/([^\\.]*)", "dest": "/browser/index.html" }]
 }
