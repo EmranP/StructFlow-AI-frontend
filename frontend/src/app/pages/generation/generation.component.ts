@@ -48,7 +48,6 @@ export class GenerationComponent implements OnInit, OnDestroy {
 		this.generationService.getById(this.genId).subscribe({
 			next: gen => {
 				this.generation = gen
-				console.log(gen)
 				setTimeout(() => {
 					this.showBar = true
 				}, 0)
@@ -66,11 +65,11 @@ export class GenerationComponent implements OnInit, OnDestroy {
 	}
 
 	startPolling() {
-		this.countdown = 30
+		this.countdown = 20
 
 		this.countdownInterval = setInterval(() => {
 			this.countdown--
-			if (this.countdown <= 0) this.countdown = 30
+			if (this.countdown <= 0) this.countdown = 20
 		}, 1000)
 
 		this.pollInterval = setInterval(() => {
@@ -80,7 +79,7 @@ export class GenerationComponent implements OnInit, OnDestroy {
 					this.generation.status !== 'failed')
 			) {
 				this.checkStatus()
-				this.countdown = 30
+				this.countdown = 20
 			}
 		}, 30000)
 	}

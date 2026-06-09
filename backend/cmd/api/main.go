@@ -196,7 +196,7 @@ func main() {
 		jwtMiddleware.Protected,
 		authHandler.Logout,
 	)
-	// Update swagger docs after completed client side
+
 	// AI
 	aiRoute.Get(
 		"/models",

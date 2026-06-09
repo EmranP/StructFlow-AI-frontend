@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common'
 import { Component, inject, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
-import { Generation, ProjectItem } from '../../models'
+import { Generation, ModelResponse, ProjectItem } from '../../models'
+import { AiService } from '../../services/ai.service'
 import { AuthService } from '../../services/auth.service'
 import { GenerationService } from '../../services/generation.service'
 import { ProjectService } from '../../services/project.service'
@@ -20,6 +21,7 @@ export class ProjectDetailComponent implements OnInit {
 	projectService = inject(ProjectService)
 	generationService = inject(GenerationService)
 	authService = inject(AuthService)
+	aiService = inject(AiService)
 
 	project: ProjectItem | null = null
 	generations: Generation[] = []
@@ -28,7 +30,10 @@ export class ProjectDetailComponent implements OnInit {
 	generating = false
 	editing = false
 	saving = false
-	message = ''
+	modelsLoading = true
+
+	models: ModelResponse[] = []
+	selectedModel = 'gemini'
 
 	// Pagination
 	page = 1
@@ -36,6 +41,34 @@ export class ProjectDetailComponent implements OnInit {
 	totalCount = 0
 
 	editForm: any = {}
+
+	readonly modelConfig: Record<
+		string,
+		{ icon: string; color: string; bg: string }
+	> = {
+		gemini: {
+			icon: '../../../assets/gemini.svg',
+			color: '#4285f4',
+			bg: 'rgba(66, 133, 244, 0.12)',
+		},
+		claude: {
+			icon: '../../../assets/claude-ai-icon.svg',
+			color: '#d97706',
+			bg: 'rgba(217, 119, 6, 0.12)',
+		},
+		gpt: {
+			icon: '../../../assets/openai.svg',
+			color: '#10a37f',
+			bg: 'rgba(16, 163, 127, 0.12)',
+		},
+	}
+
+	get allModelsUnavailable(): boolean {
+		return (
+			!this.modelsLoading &&
+			(this.models.length === 0 || this.models.every(m => !m.available))
+		)
+	}
 
 	get totalPages(): number {
 		return Math.ceil(this.totalCount / this.limit)
@@ -55,6 +88,44 @@ export class ProjectDetailComponent implements OnInit {
 		})
 		const id = this.route.snapshot.paramMap.get('id')!
 		this.loadData(id)
+		this.loadModels()
+	}
+
+	loadModels() {
+		this.modelsLoading = true
+		this.aiService.getModels().subscribe({
+			next: models => {
+				this.models = models
+				if (
+					this.models.length &&
+					!this.models.find(m => m.id === this.selectedModel)
+				) {
+					this.selectedModel = this.models[0].id
+				}
+				this.modelsLoading = false
+			},
+			error: () => {
+				// Fallback если /ai/models недоступен
+				this.models = [
+					{
+						id: 'gemini',
+						name: 'Gemini',
+						available: false,
+					},
+					{
+						id: 'claude',
+						name: 'Claude',
+						available: false,
+					},
+					{
+						id: 'gpt',
+						name: 'GPT-4',
+						available: false,
+					},
+				]
+				this.modelsLoading = false
+			},
+		})
 	}
 
 	loadData(id: string) {
@@ -101,17 +172,23 @@ export class ProjectDetailComponent implements OnInit {
 	}
 
 	startGeneration() {
+		if (!this.project || this.modelsLoading || this.allModelsUnavailable) {
+			return
+		}
+
 		if (!this.project) return
 		this.generating = true
-		this.projectService.startGeneration(this.project.id).subscribe({
-			next: gen => {
-				this.generating = false
-				this.router.navigate(['/generation', gen.id])
-			},
-			error: () => {
-				this.generating = false
-			},
-		})
+		this.projectService
+			.startGeneration(this.project.id, this.selectedModel)
+			.subscribe({
+				next: gen => {
+					this.generating = false
+					this.router.navigate(['/generation', gen.id])
+				},
+				error: () => {
+					this.generating = false
+				},
+			})
 	}
 
 	viewGeneration(gen: Generation) {
@@ -131,8 +208,8 @@ export class ProjectDetailComponent implements OnInit {
 		if (!this.project) return
 		this.saving = true
 		this.projectService.edit(this.project.id, this.editForm).subscribe({
-			next: p => {
-				this.message = p.message
+			next: () => {
+				this.project = { ...this.project!, ...this.editForm }
 				this.editing = false
 				this.saving = false
 			},

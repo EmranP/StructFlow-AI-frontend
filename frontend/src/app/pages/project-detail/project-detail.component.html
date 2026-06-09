@@ -43,25 +43,102 @@
 					Edit
 				</button>
 				<button class="btn btn-danger" (click)="deleteProject()">Delete</button>
-				<button
-					class="btn btn-primary generate-btn"
-					(click)="startGeneration()"
-					[disabled]="generating"
-				>
-					<svg
-						*ngIf="!generating"
-						width="16"
-						height="16"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
+
+				<div class="generate-wrap">
+					<!-- Skeleton -->
+					<div class="models-skeleton" *ngIf="modelsLoading">
+						<div class="model-skel-label"></div>
+						<div class="model-skel-tabs">
+							<div class="model-skel-tab" *ngFor="let i of [1, 2, 3]"></div>
+						</div>
+					</div>
+
+					<!-- Все модели недоступны -->
+					<div class="models-unavailable" *ngIf="allModelsUnavailable">
+						<svg
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
+							<circle cx="12" cy="12" r="10" />
+							<line x1="12" y1="8" x2="12" y2="12" />
+							<line x1="12" y1="16" x2="12.01" y2="16" />
+						</svg>
+						All AI models are currently unavailable
+					</div>
+
+					<!-- Модели загружены и есть доступные -->
+					<div
+						class="model-picker"
+						*ngIf="!modelsLoading && models.length > 0 && !allModelsUnavailable"
 					>
-						<polygon points="5 3 19 12 5 21 5 3" />
-					</svg>
-					<span class="spinner" *ngIf="generating"></span>
-					{{ generating ? 'Starting...' : 'Generate Structure' }}
-				</button>
+						<label class="model-label">AI Model</label>
+						<div class="model-tabs">
+							<button
+								*ngFor="let m of models; let i = index"
+								class="model-tab"
+								[class.active]="selectedModel === m.id"
+								[class.unavailable]="!m.available"
+								[disabled]="!m.available"
+								(click)="m.available && (selectedModel = m.id)"
+								[style.--model-color]="modelConfig[m.id]?.color"
+								[style.--model-bg]="modelConfig[m.id]?.bg"
+								[style.--i]="i"
+							>
+								<img
+									class="model-icon"
+									[src]="modelConfig[m.id]?.icon"
+									[alt]="m.name"
+								/>
+								{{ m.name }}
+								<!-- Метка если недоступна -->
+								<span class="unavail-badge" *ngIf="!m.available">off</span>
+							</button>
+						</div>
+					</div>
+
+					<!-- Generate button -->
+					<button
+						class="btn btn-primary generate-btn"
+						[class.btn-disabled-unavail]="allModelsUnavailable"
+						(click)="startGeneration()"
+						[disabled]="generating || modelsLoading || allModelsUnavailable"
+					>
+						<!-- Иконка недоступности -->
+						<svg
+							*ngIf="allModelsUnavailable"
+							width="15"
+							height="15"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
+							<circle cx="12" cy="12" r="10" />
+							<line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+						</svg>
+						<!-- Обычная иконка -->
+						<svg
+							*ngIf="!generating && !allModelsUnavailable"
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
+							<polygon points="5 3 19 12 5 21 5 3" />
+						</svg>
+						<span class="spinner" *ngIf="generating"></span>
+						<span *ngIf="allModelsUnavailable">AI Unavailable</span>
+						<span *ngIf="!allModelsUnavailable">
+							{{ generating ? 'Starting...' : 'Generate Structure' }}
+						</span>
+					</button>
+				</div>
 			</div>
 		</div>
 

@@ -4,9 +4,12 @@ export interface User {
 	createdAt: string
 }
 
+export interface MessageResponse {
+	message: string
+}
+
 export interface AuthResponse {
 	accessToken: string
-	user?: User
 }
 
 export interface GetID {
@@ -68,4 +71,19 @@ export interface Template {
 	type: 'simple' | 'medium' | 'enterprise'
 	content: TemplateContent
 	createdAt: string
+}
+
+export interface ModelResponse {
+	id: string
+	name: string
+	available: boolean
+}
+
+export interface VerifyEmailDto {
+	email: string
+	code: string
+}
+
+export interface RefreshResponse {
+	token: string
 }

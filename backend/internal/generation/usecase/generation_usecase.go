@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/google/uuid"
 
@@ -78,11 +77,9 @@ func (u *generationUseCase) Add(
 
 	errNewGen := u.generationRepo.Create(ctx, generation)
 	if errNewGen != nil {
-		fmt.Print()
+
 		return nil, errNewGen
 	}
-
-	fmt.Println("Ai")
 
 	aiProvider, ok := u.aiManager.Get(model)
 	if !ok {

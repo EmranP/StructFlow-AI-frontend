@@ -146,6 +146,16 @@ components:
           type: string
         projectId:
           type: string
+    AiModelsResponse:
+      type: array
+    GenerationRequest:
+      type: object
+      required:
+        - model
+      properties:
+        model:
+          type: string
+          example: claude
     GenerationResponse:
       type: object
       properties:
@@ -313,6 +323,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MeResponse'
+  /ai/models:
+    get:
+      tags:
+        - AI
+      security:
+        - BearerAuth: []
+      summary: Get all ai models
+      responses:
+        '200':
+          description: AI models
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiModelsResponse'
 
   /project/new:
     post:
@@ -476,6 +500,12 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerationRequest'
       responses:
         '200':
           description: Generation created

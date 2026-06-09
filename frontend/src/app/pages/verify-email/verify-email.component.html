@@ -1,0 +1,82 @@
+<div class="auth-page">
+	<div class="auth-bg">
+		<div class="grid-overlay"></div>
+	</div>
+
+	<div class="auth-card animate-fade-up">
+		<div class="auth-header">
+			<div class="logo-wrap">
+				<span class="verify-icon">✉</span>
+			</div>
+			<h1>Verify Email</h1>
+			<p>
+				We sent a code to <strong>{{ email }}</strong>
+			</p>
+		</div>
+
+		<div class="form-group">
+			<label>VERIFICATION CODE</label>
+			<input
+				class="code-input"
+				[(ngModel)]="code"
+				placeholder="code"
+				maxlength="6"
+				(keyup.enter)="verify()"
+			/>
+		</div>
+
+		<div class="error-msg" *ngIf="error">
+			<svg
+				width="14"
+				height="14"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
+				<circle cx="12" cy="12" r="10" />
+				<line x1="12" y1="8" x2="12" y2="12" />
+				<line x1="12" y1="16" x2="12.01" y2="16" />
+			</svg>
+			{{ error }}
+		</div>
+
+		<div class="success-msg" *ngIf="successMsg">
+			<svg
+				width="14"
+				height="14"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
+				<polyline points="20 6 9 17 4 12" />
+			</svg>
+			{{ successMsg }}
+		</div>
+
+		<button
+			class="btn btn-primary submit-btn"
+			(click)="verify()"
+			[disabled]="loading"
+		>
+			<span *ngIf="!loading">Verify Email</span>
+			<span *ngIf="loading" class="spinner"></span>
+		</button>
+
+		<div class="resend-wrap">
+			<span class="resend-text">Didn't get the code?</span>
+			<button
+				class="resend-btn"
+				(click)="resend()"
+				[disabled]="cooldown > 0 || resending"
+			>
+				<span *ngIf="cooldown > 0">Resend in {{ cooldown }}s</span>
+				<span *ngIf="cooldown === 0 && !resending">Resend Code</span>
+				<span *ngIf="resending" class="spinner spinner-sm"></span>
+			</button>
+		</div>
+
+		<a class="back-link" routerLink="/auth">← Back to Sign In</a>
+	</div>
+</div>

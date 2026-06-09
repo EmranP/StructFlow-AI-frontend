@@ -286,3 +286,240 @@
 		transform: rotate(360deg);
 	}
 }
+
+.generate-wrap {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 10px;
+}
+
+/* ── Skeleton ── */
+.models-skeleton {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 6px;
+	// Skeleton сам уходит — кнопка Generate плавно сдвигается
+	animation: fadeIn 0.2s ease;
+}
+
+.model-skel-label {
+	width: 56px;
+	height: 10px;
+	border-radius: 4px;
+	background: linear-gradient(
+		90deg,
+		var(--bg-3) 25%,
+		var(--border) 50%,
+		var(--bg-3) 75%
+	);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s infinite;
+}
+
+.model-skel-tabs {
+	display: flex;
+	gap: 4px;
+}
+
+.model-skel-tab {
+	width: 72px;
+	height: 34px;
+	border-radius: 6px;
+	background: linear-gradient(
+		90deg,
+		var(--bg-3) 25%,
+		var(--border) 50%,
+		var(--bg-3) 75%
+	);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s infinite;
+
+	&:nth-child(2) {
+		animation-delay: 0.12s;
+	}
+	&:nth-child(3) {
+		animation-delay: 0.24s;
+	}
+}
+
+@keyframes shimmer {
+	from {
+		background-position: 200% 0;
+	}
+	to {
+		background-position: -200% 0;
+	}
+}
+
+/* ── Unavailable notice ── */
+.models-unavailable {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--danger);
+	background: rgba(248, 113, 113, 0.08);
+	border: 1px solid rgba(248, 113, 113, 0.2);
+	border-radius: 8px;
+	padding: 7px 12px;
+	// Плавное появление
+	animation: slideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Model picker ── */
+.model-label {
+	font-size: 11px;
+	font-weight: 700;
+	color: var(--text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	// Появляется вместе с табами
+	animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.model-tabs {
+	display: flex;
+	gap: 4px;
+	background: var(--bg-3);
+	padding: 3px;
+	border-radius: 8px;
+	border: 1px solid var(--border);
+}
+
+.model-tab {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	padding: 6px 14px;
+	border-radius: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	font-family: inherit;
+	background: transparent;
+	color: var(--text-muted);
+	cursor: pointer;
+	border: 1px solid transparent;
+	transition: all 0.18s ease;
+	position: relative;
+
+	// Каждый таб появляется с задержкой через --i
+	opacity: 0;
+	animation: slideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	animation-delay: calc(var(--i, 0) * 0.07s);
+
+	&:hover:not(:disabled):not(.active):not(.unavailable) {
+		color: var(--text-dim);
+		background: rgba(255, 255, 255, 0.04);
+	}
+
+	&.active {
+		background: var(--model-bg, var(--bg-2));
+		color: var(--model-color, var(--text));
+		border-color: color-mix(
+			in srgb,
+			var(--model-color, var(--accent)) 30%,
+			transparent
+		);
+		box-shadow: 0 1px 8px
+			color-mix(in srgb, var(--model-color, var(--accent)) 20%, transparent);
+
+		.model-icon {
+			filter: drop-shadow(0 0 5px var(--model-color));
+		}
+	}
+
+	// Недоступная модель
+	&.unavailable {
+		opacity: 0.35;
+		cursor: not-allowed;
+		text-decoration: line-through;
+		text-decoration-color: var(--danger);
+	}
+}
+
+.model-icon {
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+	object-fit: contain;
+	transition: filter 0.18s, opacity 0.18s;
+	// Небольшое затемнение для неактивных
+	opacity: 0.7;
+
+	.model-tab.active & {
+		opacity: 1;
+		filter: drop-shadow(0 0 5px var(--model-color));
+	}
+
+	.model-tab.unavailable & {
+		opacity: 0.3;
+		filter: grayscale(1);
+	}
+}
+
+.unavail-badge {
+	font-size: 9px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--danger);
+	background: rgba(248, 113, 113, 0.15);
+	border-radius: 4px;
+	padding: 1px 5px;
+	margin-left: 2px;
+}
+
+/* ── Generate button ── */
+.generate-btn {
+	padding: 10px 20px;
+	font-size: 14px;
+	background: linear-gradient(135deg, #6366f1, #818cf8);
+	box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+	white-space: nowrap;
+	transition: all 0.2s ease;
+
+	// Кнопка тоже появляется с анимацией когда модели загружены
+	animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+	&:hover:not(:disabled) {
+		box-shadow: 0 6px 28px rgba(99, 102, 241, 0.5);
+		transform: translateY(-1px);
+	}
+
+	// Состояние когда все модели недоступны
+	&.btn-disabled-unavail {
+		background: linear-gradient(135deg, #374151, #4b5563);
+		box-shadow: none;
+		cursor: not-allowed;
+		opacity: 0.7;
+
+		&:hover {
+			transform: none;
+			box-shadow: none;
+		}
+	}
+}
+
+/* ── Shared animations ── */
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}

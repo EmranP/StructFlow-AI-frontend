@@ -9,6 +9,13 @@ export const routes: Routes = [
 			import('./pages/auth/auth.component').then(m => m.AuthComponent),
 	},
 	{
+		path: 'verify-email',
+		loadComponent: () =>
+			import('./pages/verify-email/verify-email.component').then(
+				m => m.VerifyEmailComponent
+			),
+	},
+	{
 		path: 'projects',
 		loadComponent: () =>
 			import('./pages/projects/projects.component').then(

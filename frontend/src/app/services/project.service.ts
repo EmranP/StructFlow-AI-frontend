@@ -45,11 +45,14 @@ export class ProjectService {
 	}
 
 	startGeneration(
-		projectId: string
+		projectId: string,
+		model: string
 	): Observable<{ id: string; status: string }> {
 		return this.http.post<{ id: string; status: string }>(
 			`${this.apiUrl}/project/gen/${projectId}`,
-			{}
+			{
+				model,
+			}
 		)
 	}
 }
