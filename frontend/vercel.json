@@ -2,5 +2,6 @@
 	"version": 2,
 	"public": true,
 	"cleanUrls": true,
-	"routes": [{ "src": "/([^\\.]*)", "dest": "/browser/index.html" }]
+	"outputDirectory": "dist/structflow/browser",
+	"routes": [{ "src": "/([^\\.]*)", "dest": "/index.html" }]
 }
