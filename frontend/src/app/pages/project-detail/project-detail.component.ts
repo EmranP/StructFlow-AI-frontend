@@ -13,7 +13,11 @@ import { ProjectService } from '../../services/project.service'
 	standalone: true,
 	imports: [CommonModule, RouterLink, FormsModule],
 	templateUrl: './project-detail.component.html',
-	styleUrls: ['./project-detail.component.scss', '../../app.component.scss'],
+	styleUrls: [
+		'./project-detail.component.scss',
+		'./project-detail-icon.component.scss',
+		'../../app.component.scss',
+	],
 })
 export class ProjectDetailComponent implements OnInit {
 	route = inject(ActivatedRoute)
