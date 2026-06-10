@@ -12,7 +12,7 @@
 
 **Describe your project → AI designs the folder structure → Download and start coding**
 
-[Demo](https://struct-flow-ai-frontend.vercel.app/)
+[backend](https://github.com/EmranP/-StructFlow-AI-backend)
 
 </div>
 
@@ -97,7 +97,7 @@ Describe your project in plain text → StructFlow generates 3 ready-to-use dire
 - **Go** `1.21+`
 - **Node.js** `18+`
 - **PostgreSQL** `14+`
-- **Docker** (optional, recommended)
+- **Docker** (optional, recommended for up db, swagger)
 
 ---
 
@@ -166,14 +166,22 @@ DB_PORT=5432
 DB_NAME=structflow
 DB_USER=postgres
 DB_PASSWORD=your_password
+DB_URL=db-url
+
+# AI-Provider
+API_AI_GEMINI_KEY=gemini-api-key
+API_AI_CLAUDE_KEY=claude-api-key
+API_AI_CHAT_GPT_KEY=gpt-api-key
+
+# Email-provider
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_EMAIL=email-sendler
+SMTP_PASSWORD=email-app-password
 
 # JWT
 JWT_SECRET=your_super_secret_key
-JWT_EXPIRES_IN=24h
 
-
-# AI Provider
-AI_API_KEY=your_ai_api_key
 ```
 
 ---
