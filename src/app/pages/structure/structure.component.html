@@ -1,0 +1,184 @@
+<div class="page" *ngIf="!loading">
+	<div class="container">
+		<!-- Header -->
+		<div class="struct-header animate-fade-up">
+			<div>
+				<div class="breadcrumb">
+					<a routerLink="/projects">Projects</a>
+					<span>›</span>
+					<span>Generated Structure</span>
+				</div>
+				<h1 class="page-title">Project Structure</h1>
+				<p class="page-subtitle">
+					Choose your preferred architecture complexity
+				</p>
+			</div>
+			<button
+				class="btn btn-primary"
+				(click)="download()"
+				[disabled]="downloading || !activeTemplate"
+			>
+				<svg
+					width="15"
+					height="15"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+					<polyline points="7 10 12 15 17 10" />
+					<line x1="12" y1="15" x2="12" y2="3" />
+				</svg>
+				{{ downloading ? 'Downloading...' : 'Download ZIP' }}
+			</button>
+		</div>
+
+		<!-- Template Tabs -->
+		<div class="template-tabs animate-fade-up">
+			<button
+				*ngFor="let t of templates"
+				class="tab-btn"
+				[class.active]="activeTab === t.type"
+				(click)="selectTemplate(t)"
+			>
+				<span class="tab-icon">{{ typeLabels[t.type]?.icon }}</span>
+				<div class="tab-text">
+					<span class="tab-label">{{ typeLabels[t.type]?.label }}</span>
+					<span class="tab-desc">{{ typeLabels[t.type]?.desc }}</span>
+				</div>
+			</button>
+		</div>
+
+		<!-- Stats -->
+		<div class="stats-row animate-fade-up" *ngIf="activeTemplate">
+			<div class="stat-item">
+				<span class="stat-num">{{ totalFiles }}</span>
+				<span class="stat-label">Files</span>
+			</div>
+			<div class="stat-divider"></div>
+			<div class="stat-item">
+				<span class="stat-num">{{ totalDirs }}</span>
+				<span class="stat-label">Directories</span>
+			</div>
+			<div class="stat-divider"></div>
+			<div class="stat-item">
+				<span class="stat-num mono type-badge-{{ activeTemplate.type }}">{{
+					activeTemplate.type
+				}}</span>
+				<span class="stat-label">Complexity</span>
+			</div>
+		</div>
+
+		<!-- Tree View -->
+		<div class="tree-panel animate-fade-up" *ngIf="activeTemplate">
+			<div class="tree-header">
+				<span class="tree-title">
+					<svg
+						width="14"
+						height="14"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<path
+							d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+						/>
+					</svg>
+					File Structure
+				</span>
+				<span class="mono text-muted" style="font-size: 12px">{{
+					activeTemplate.type
+				}}</span>
+			</div>
+			<div class="tree-body">
+				<ng-container
+					*ngTemplateOutlet="
+						treeNode;
+						context: { nodes: tree, depth: 0, prefix: '' }
+					"
+				></ng-container>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Recursive tree template -->
+<ng-template #treeNode let-nodes="nodes" let-depth="depth" let-prefix="prefix">
+	<div *ngFor="let node of nodes; let last = last" class="tree-item-wrap">
+		<div
+			class="tree-item"
+			[class.tree-dir]="node.type === 'dir'"
+			[class.tree-file]="node.type === 'file'"
+			[style.padding-left]="depth * 20 + 16 + 'px'"
+			(click)="node.type === 'dir' ? toggleNode(prefix + node.name) : null"
+		>
+			<span class="tree-connector">
+				<span class="connector-line" *ngIf="depth > 0">{{
+					last ? '└' : '├'
+				}}</span>
+			</span>
+
+			<span class="tree-toggle" *ngIf="node.type === 'dir'">
+				{{ isExpanded(prefix + node.name) ? '▾' : '▸' }}
+			</span>
+
+			<span class="tree-icon" *ngIf="node.type === 'dir'">
+				<svg
+					width="13"
+					height="13"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<path
+						d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+					/>
+				</svg>
+			</span>
+			<span class="file-emoji" *ngIf="node.type === 'file'">{{
+				getFileIcon(node.name)
+			}}</span>
+
+			<span class="tree-name" [class.dir-name]="node.type === 'dir'">{{
+				node.name
+			}}</span>
+			<span class="file-count" *ngIf="node.type === 'dir' && node.children">{{
+				node.children.length
+			}}</span>
+		</div>
+
+		<div
+			*ngIf="
+				node.type === 'dir' &&
+				isExpanded(prefix + node.name) &&
+				node.children?.length
+			"
+		>
+			<ng-container
+				*ngTemplateOutlet="
+					treeNode;
+					context: {
+						nodes: node.children,
+						depth: depth + 1,
+						prefix: prefix + node.name + '/'
+					}
+				"
+			></ng-container>
+		</div>
+	</div>
+</ng-template>
+
+<!-- Loading -->
+<div class="page" *ngIf="loading">
+	<div class="container">
+		<div
+			class="skeleton"
+			style="height: 40px; width: 300px; margin-bottom: 20px"
+		></div>
+		<div class="skeleton" style="height: 120px; margin-bottom: 20px"></div>
+		<div class="skeleton" style="height: 400px"></div>
+	</div>
+</div>

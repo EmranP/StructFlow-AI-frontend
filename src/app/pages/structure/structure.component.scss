@@ -1,0 +1,267 @@
+.struct-header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 20px;
+	margin-bottom: 32px;
+	flex-wrap: wrap;
+}
+
+.breadcrumb {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+	color: var(--text-muted);
+	margin-bottom: 12px;
+	a {
+		color: var(--accent);
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
+
+.page-title {
+	font-size: 32px;
+	font-weight: 800;
+	letter-spacing: -0.03em;
+	margin-bottom: 6px;
+}
+
+.page-subtitle {
+	font-size: 15px;
+	color: var(--text-muted);
+}
+
+.template-tabs {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 24px;
+	flex-wrap: wrap;
+}
+
+.tab-btn {
+	flex: 1;
+	min-width: 200px;
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 20px 24px;
+	background: var(--bg-2);
+	border: 2px solid var(--border);
+	border-radius: var(--radius);
+	cursor: pointer;
+	transition: all 0.2s;
+	text-align: left;
+
+	&:hover {
+		border-color: rgba(99, 102, 241, 0.3);
+	}
+	&.active {
+		border-color: var(--accent);
+		background: var(--accent-glow);
+		box-shadow: 0 0 24px rgba(99, 102, 241, 0.15);
+	}
+}
+
+.tab-icon {
+	font-size: 28px;
+	color: var(--accent);
+	line-height: 1;
+	flex-shrink: 0;
+}
+
+.tab-text {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.tab-label {
+	font-size: 15px;
+	font-weight: 700;
+	color: var(--text);
+}
+
+.tab-desc {
+	font-size: 12px;
+	color: var(--text-muted);
+	line-height: 1.4;
+}
+
+.stats-row {
+	display: flex;
+	align-items: center;
+	gap: 0;
+	background: var(--bg-2);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: 20px 32px;
+	margin-bottom: 24px;
+}
+
+.stat-item {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+}
+
+.stat-num {
+	font-size: 28px;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	color: var(--text);
+
+	&.type-badge-simple {
+		color: var(--success);
+	}
+	&.type-badge-medium {
+		color: var(--warning);
+	}
+	&.type-badge-enterprise {
+		color: var(--accent);
+	}
+}
+
+.stat-label {
+	font-size: 12px;
+	color: var(--text-muted);
+	text-transform: uppercase;
+	font-weight: 600;
+	letter-spacing: 0.05em;
+}
+
+.stat-divider {
+	width: 1px;
+	height: 48px;
+	background: var(--border);
+}
+
+.tree-panel {
+	background: var(--bg-2);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	overflow: hidden;
+}
+
+.tree-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--border);
+	background: var(--bg-3);
+}
+
+.tree-title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--text-dim);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.text-muted {
+	color: var(--text-muted);
+}
+
+.tree-body {
+	padding: 12px 0;
+	max-height: 600px;
+	overflow-y: auto;
+}
+
+.tree-item {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 5px 16px;
+	cursor: default;
+	transition: background 0.12s;
+	position: relative;
+
+	&.tree-dir {
+		cursor: pointer;
+		&:hover {
+			background: rgba(255, 255, 255, 0.03);
+		}
+	}
+	&.tree-file:hover {
+		background: rgba(255, 255, 255, 0.02);
+	}
+}
+
+.tree-connector {
+	width: 16px;
+	flex-shrink: 0;
+}
+.connector-line {
+	font-family: 'Space Mono', monospace;
+	color: var(--border);
+	font-size: 13px;
+}
+
+.tree-toggle {
+	color: var(--text-muted);
+	font-size: 11px;
+	width: 14px;
+	flex-shrink: 0;
+	user-select: none;
+}
+
+.tree-icon {
+	color: var(--accent-2);
+	flex-shrink: 0;
+}
+.file-emoji {
+	font-size: 13px;
+	flex-shrink: 0;
+}
+
+.tree-name {
+	font-size: 13px;
+	font-family: 'Space Mono', monospace;
+	color: var(--text-dim);
+	white-space: nowrap;
+
+	&.dir-name {
+		color: var(--text);
+		font-weight: 700;
+	}
+}
+
+.file-count {
+	margin-left: auto;
+	font-size: 11px;
+	color: var(--text-muted);
+	background: var(--bg-3);
+	padding: 1px 7px;
+	border-radius: 100px;
+}
+
+.skeleton {
+	border-radius: var(--radius);
+	background: linear-gradient(
+		90deg,
+		var(--bg-2) 25%,
+		var(--bg-3) 50%,
+		var(--bg-2) 75%
+	);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s infinite;
+	margin-bottom: 20px;
+}
+@keyframes shimmer {
+	from {
+		background-position: 200% 0;
+	}
+	to {
+		background-position: -200% 0;
+	}
+}

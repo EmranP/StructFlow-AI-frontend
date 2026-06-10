@@ -1,0 +1,132 @@
+<div class="page gen-page">
+	<div class="container">
+		<div class="gen-wrap">
+			<!-- PENDING: ждём начала, другая анимация -->
+			<ng-container *ngIf="!generation || generation.status === 'pending'">
+				<div class="pending-state">
+					<div class="queue-icon">
+						<div class="queue-ring"></div>
+						<div class="queue-ring queue-ring-2"></div>
+						<div class="queue-ring queue-ring-3"></div>
+						<span class="queue-dot">⬡</span>
+					</div>
+					<h2 class="pending-title">In Queue</h2>
+					<p class="pending-sub">
+						Your request is waiting to be picked up by the AI
+					</p>
+
+					<div class="queue-steps">
+						<div class="q-step done">
+							<span class="q-icon">✓</span>
+							<span>Request created</span>
+						</div>
+						<div class="q-step active">
+							<span class="q-icon pulse-icon">◉</span>
+							<span>Waiting in queue</span>
+						</div>
+						<div class="q-step">
+							<span class="q-icon">○</span>
+							<span>AI processing</span>
+						</div>
+						<div class="q-step">
+							<span class="q-icon">○</span>
+							<span>Done</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="status-badge-wrap" *ngIf="generation">
+					<span class="badge badge-pending">
+						<span class="s-dot"></span>
+						pending
+					</span>
+					<span class="gen-id-text mono">ID: {{ generation.id }}</span>
+				</div>
+			</ng-container>
+
+			<!-- PROCESS: AI работает, показываем loading wave + poll bar -->
+			<ng-container *ngIf="generation?.status === 'processing'">
+				<app-loading-wave
+					[message]="getStatusLabel('processing')"
+				></app-loading-wave>
+
+				<div class="poll-info">
+					<div class="poll-bar">
+						<!-- showBar false→true пересоздаёт div → анимация рестартует -->
+						<div
+							class="poll-fill"
+							*ngIf="showBar"
+							[style.animation-duration]="'30s'"
+						></div>
+					</div>
+					<p class="poll-text">
+						Next check in <strong>{{ countdown }}s</strong>
+					</p>
+				</div>
+
+				<div class="status-badge-wrap">
+					<span class="badge badge-process">
+						<span class="s-dot"></span>
+						processing
+					</span>
+					<span class="gen-id-text mono">ID: {{ generation!.id }}</span>
+				</div>
+			</ng-container>
+
+			<!-- COMPLETED -->
+			<div
+				class="completed-state animate-fade-up"
+				*ngIf="generation?.status === 'completed'"
+			>
+				<div class="success-icon">
+					<svg
+						width="32"
+						height="32"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2.5"
+					>
+						<polyline points="20 6 9 17 4 12" />
+					</svg>
+				</div>
+				<h2>Structure Generated!</h2>
+				<p>
+					Your AI-designed project structure is ready to explore and download.
+				</p>
+				<button class="btn btn-primary btn-lg" (click)="viewStructure()">
+					<svg
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<path
+							d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+						/>
+					</svg>
+					Explore Structure
+				</button>
+			</div>
+
+			<!-- FAILED -->
+			<div
+				class="failed-state animate-fade-up"
+				*ngIf="generation?.status === 'failed'"
+			>
+				<div class="fail-icon">✕</div>
+				<h2>Generation Failed</h2>
+				<p *ngIf="generation?.errorMessage">{{ generation?.errorMessage }}</p>
+				<a routerLink="/projects" class="btn btn-ghost">Back to Projects</a>
+			</div>
+
+			<!-- Network error -->
+			<div class="failed-state" *ngIf="error && !generation">
+				<p class="error-text">{{ error }}</p>
+				<a routerLink="/projects" class="btn btn-ghost">Back to Projects</a>
+			</div>
+		</div>
+	</div>
+</div>

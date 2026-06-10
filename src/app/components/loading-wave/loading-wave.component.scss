@@ -1,0 +1,134 @@
+.loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 60px 0;
+}
+
+.orbit-container {
+  position: relative;
+  width: 180px;
+  height: 180px;
+}
+
+.orbit {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  animation: spin 8s linear infinite;
+}
+
+.orbit-2 {
+  inset: 24px;
+  animation-duration: 5s;
+  animation-direction: reverse;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  top: 50%; left: 50%;
+  margin: -5px;
+  transform: rotate(calc(var(--i) * 30deg)) translateX(75px);
+  animation: dotPulse 2s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.16s);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+.dot-2 {
+  width: 7px;
+  height: 7px;
+  margin: -3.5px;
+  background: var(--accent-2);
+  transform: rotate(calc(var(--i) * 45deg)) translateX(50px);
+  box-shadow: 0 0 6px var(--accent-2);
+  animation-delay: calc(var(--i) * 0.2s);
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.3; scale: 0.7; }
+  50% { opacity: 1; scale: 1.2; }
+}
+
+.center-icon {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 42px;
+  color: var(--accent);
+  animation: iconPulse 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px var(--accent));
+}
+
+@keyframes iconPulse {
+  0%, 100% { filter: drop-shadow(0 0 8px var(--accent)); }
+  50% { filter: drop-shadow(0 0 20px var(--accent)); }
+}
+
+.loading-text {
+  text-align: center;
+
+  .title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+}
+
+.progress-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 28px;
+
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text-muted);
+    transition: color 0.3s;
+
+    &.active {
+      color: var(--text);
+
+      .step-dot {
+        background: var(--accent);
+        box-shadow: 0 0 8px var(--accent);
+        animation: stepPulse 1.5s ease-in-out infinite;
+      }
+    }
+  }
+
+  .step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+}
+
+@keyframes stepPulse {
+  0%, 100% { box-shadow: 0 0 4px var(--accent); }
+  50% { box-shadow: 0 0 12px var(--accent); }
+}

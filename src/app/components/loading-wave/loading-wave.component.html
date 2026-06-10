@@ -1,0 +1,29 @@
+<div class="loading-wrap">
+  <div class="orbit-container">
+    <div class="orbit">
+      <div *ngFor="let d of dots; let i = index" class="dot" [style.--i]="i"></div>
+    </div>
+    <div class="orbit orbit-2">
+      <div *ngFor="let d of dots.slice(0,8); let i = index" class="dot dot-2" [style.--i]="i"></div>
+    </div>
+    <div class="center-icon">⬡</div>
+  </div>
+  <div class="loading-text">
+    <p class="title">{{ message }}</p>
+    <p class="subtitle">AI is analyzing your project requirements</p>
+  </div>
+  <div class="progress-steps">
+    <div class="step active">
+      <span class="step-dot"></span>
+      <span>Analyzing prompt</span>
+    </div>
+    <div class="step active">
+      <span class="step-dot"></span>
+      <span>Designing architecture</span>
+    </div>
+    <div class="step">
+      <span class="step-dot"></span>
+      <span>Generating templates</span>
+    </div>
+  </div>
+</div>
